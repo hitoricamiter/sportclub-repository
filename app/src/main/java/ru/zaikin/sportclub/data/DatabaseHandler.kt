@@ -13,14 +13,16 @@ class DatabaseHandler(
     SportclubContract.MemberEntry.DATABASE_VERSION
 ) {
 
-
     override fun onCreate(db: SQLiteDatabase?) {
-        val CREATE_CLUB_TABLE: String =
-            "CREATE TABLE ${SportclubContract.MemberEntry.TABLE_NAME} (${SportclubContract.MemberEntry.COLUMN_ID} INTEGER PRIMARY KEY," +
-                    " ${SportclubContract.MemberEntry.COLUMN_FIRST_NAME} TEXT," +
-                    " ${SportclubContract.MemberEntry.COLUMN_LAST_NAME} TEXT)" +
-                    " ${SportclubContract.MemberEntry.COLUMN_GENDER} INTEGER NOT NULL" +
-                    " ${SportclubContract.MemberEntry.COLUMN_GROUP} TEXT"
+        val CREATE_CLUB_TABLE = """
+            CREATE TABLE IF NOT EXISTS ${SportclubContract.MemberEntry.TABLE_NAME} (
+                ${SportclubContract.MemberEntry.COLUMN_ID} INTEGER PRIMARY KEY,
+                ${SportclubContract.MemberEntry.COLUMN_FIRST_NAME} TEXT,
+                ${SportclubContract.MemberEntry.COLUMN_LAST_NAME} TEXT,
+                ${SportclubContract.MemberEntry.COLUMN_GENDER} INTEGER NOT NULL,
+                ${SportclubContract.MemberEntry.COLUMN_GROUP} TEXT
+            );
+        """.trimIndent()
 
         db?.execSQL(CREATE_CLUB_TABLE)
     }
@@ -30,7 +32,7 @@ class DatabaseHandler(
         oldVersion: Int,
         newVersion: Int
     ) {
-        db?.execSQL("DROP TABLE IF EXISTS ${SportclubContract.MemberEntry.DATABASE_NAME}")
+        db?.execSQL("DROP TABLE IF EXISTS ${SportclubContract.MemberEntry.TABLE_NAME}")
         onCreate(db)
     }
 }

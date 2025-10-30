@@ -22,9 +22,9 @@ class AddMemberActivity : AppCompatActivity() {
 
     private lateinit var firstName: EditText
     private lateinit var lastName: EditText
-
     private lateinit var group: EditText
     private lateinit var spinner: Spinner
+
     private var gender: Int = 0
     private lateinit var spinnerAdapter: ArrayAdapter<*>
 
@@ -33,10 +33,10 @@ class AddMemberActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_add_member)
 
-        firstName = findViewById<EditText>(R.id.firstName)
-        lastName = findViewById<EditText>(R.id.lastName)
-        spinner = findViewById<Spinner>(R.id.spinner)
-        group = findViewById<EditText>(R.id.group)
+        firstName = findViewById(R.id.firstName)
+        lastName = findViewById(R.id.lastName)
+        spinner = findViewById(R.id.spinner)
+        group = findViewById(R.id.group)
 
         spinnerAdapter = ArrayAdapter.createFromResource(
             this,
@@ -47,28 +47,25 @@ class AddMemberActivity : AppCompatActivity() {
         spinner.adapter = spinnerAdapter
 
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,
                 position: Int,
                 id: Long
             ) {
-                val selectedGender: String = parent!!.getItemAtPosition(position).toString()
-
-                when (selectedGender) {
-                    "Unknown" -> gender = SportclubContract.MemberEntry.GENDER_UNKNOWN
-                    "Male" -> gender = SportclubContract.MemberEntry.GENDER_MALE
-                    "Female" -> gender = SportclubContract.MemberEntry.GENDER_FEMALE
+                val selectedGender = parent!!.getItemAtPosition(position).toString()
+                gender = when (selectedGender) {
+                    "Unknown" -> SportclubContract.MemberEntry.GENDER_UNKNOWN
+                    "Male" -> SportclubContract.MemberEntry.GENDER_MALE
+                    "Female" -> SportclubContract.MemberEntry.GENDER_FEMALE
+                    else -> 0
                 }
-
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                gender = 0
+                gender = SportclubContract.MemberEntry.GENDER_UNKNOWN
             }
         }
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -91,26 +88,29 @@ class AddMemberActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    fun insertMember() {
-        val firstName: String = firstName.text.toString().trim()
-        val lastName: String = lastName.text.toString().trim()
-        val sport: String = group.text.toString().trim()
+    private fun insertMember() {
+        val firstNameStr = firstName.text.toString().trim()
+        val lastNameStr = lastName.text.toString().trim()
+        val sport = group.text.toString().trim()
 
-        val contentValues: ContentValues = ContentValues()
-
-        contentValues.put(SportclubContract.MemberEntry.COLUMN_FIRST_NAME, firstName)
-        contentValues.put(SportclubContract.MemberEntry.COLUMN_LAST_NAME, lastName)
-        contentValues.put(SportclubContract.MemberEntry.COLUMN_GROUP, sport)
-        contentValues.put(SportclubContract.MemberEntry.COLUMN_GENDER, gender)
-
-        val contentResolver: ContentResolver = contentResolver
-        val uri: Uri? = contentResolver.insert(SportclubContract.MemberEntry.BASE_CONTENT_URI, contentValues)
-
-        if (uri == null) {
-            Log.d("insertMember method: ", "uri is null")
+        val values = ContentValues().apply {
+            put(SportclubContract.MemberEntry.COLUMN_FIRST_NAME, firstNameStr)
+            put(SportclubContract.MemberEntry.COLUMN_LAST_NAME, lastNameStr)
+            put(SportclubContract.MemberEntry.COLUMN_GROUP, sport)
+            put(SportclubContract.MemberEntry.COLUMN_GENDER, gender)
         }
 
+        val resolver: ContentResolver = contentResolver
 
+
+        val uri: Uri? = resolver.insert(SportclubContract.MemberEntry.CONTENT_URI, values)
+
+        if (uri == null) {
+            Toast.makeText(this, "Ошибка при добавлении!", Toast.LENGTH_SHORT).show()
+            Log.d("insertMember", "URI is null")
+        } else {
+            Toast.makeText(this, "Участник добавлен!", Toast.LENGTH_SHORT).show()
+            finish()
+        }
     }
-
 }

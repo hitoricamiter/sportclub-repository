@@ -26,6 +26,8 @@ class SportclubContract {
             val GENDER_MALE: Int = 1
             val GENDER_FEMALE: Int = 2
 
+            val CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, "members")
+
         }
     }
 }
