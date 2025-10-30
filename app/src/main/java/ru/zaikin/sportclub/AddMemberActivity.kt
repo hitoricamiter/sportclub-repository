@@ -1,6 +1,10 @@
 package ru.zaikin.sportclub
 
+import android.content.ContentResolver
+import android.content.ContentValues
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -8,6 +12,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Spinner
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
@@ -73,7 +78,10 @@ class AddMemberActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.save_member -> return true
+            R.id.save_member -> {
+                insertMember()
+                return true
+            }
             R.id.delete_member -> return true
             android.R.id.home -> {
                 NavUtils.navigateUpFromSameTask(this)
@@ -82,4 +90,27 @@ class AddMemberActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+    fun insertMember() {
+        val firstName: String = firstName.text.toString().trim()
+        val lastName: String = lastName.text.toString().trim()
+        val sport: String = group.text.toString().trim()
+
+        val contentValues: ContentValues = ContentValues()
+
+        contentValues.put(SportclubContract.MemberEntry.COLUMN_FIRST_NAME, firstName)
+        contentValues.put(SportclubContract.MemberEntry.COLUMN_LAST_NAME, lastName)
+        contentValues.put(SportclubContract.MemberEntry.COLUMN_GROUP, sport)
+        contentValues.put(SportclubContract.MemberEntry.COLUMN_GENDER, gender)
+
+        val contentResolver: ContentResolver = contentResolver
+        val uri: Uri? = contentResolver.insert(SportclubContract.MemberEntry.BASE_CONTENT_URI, contentValues)
+
+        if (uri == null) {
+            Log.d("insertMember method: ", "uri is null")
+        }
+
+
+    }
+
 }

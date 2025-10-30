@@ -1,11 +1,18 @@
 package ru.zaikin.sportclub.data
 
+import android.net.Uri
 import android.provider.BaseColumns
+import androidx.core.net.toUri
 
 class SportclubContract {
 
     class MemberEntry : BaseColumns {
         companion object {
+            val SCHEME: String = "content://"
+            val AUTHORITY: String = "ru.zaikin.sportclub"
+
+            val BASE_CONTENT_URI: Uri = (SCHEME + AUTHORITY).toUri()
+
             val DATABASE_VERSION: Int = 1
             val DATABASE_NAME: String = "sport_club"
             val TABLE_NAME: String = "members"
