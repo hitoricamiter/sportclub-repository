@@ -1,15 +1,25 @@
 package ru.zaikin.sportclub
 
+import android.content.ContentUris
 import android.content.Intent
+import android.database.Cursor
+import android.net.Uri
 import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ListView
-import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.loader.app.LoaderManager
+import androidx.loader.content.CursorLoader
+import androidx.loader.content.Loader
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.zaikin.sportclub.data.SportclubContract.MemberEntry
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> {
+
+    private val MEMBER_LOADER = 123
+    private lateinit var memberCursorAdapter: MemberCursorAdapter
 
     private lateinit var dataListView: ListView
 
@@ -29,28 +39,54 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        memberCursorAdapter = MemberCursorAdapter(this, null, false)
+        dataListView.adapter = memberCursorAdapter
+
+        dataListView.setOnItemClickListener(object : AdapterView.OnItemClickListener {
+            override fun onItemClick(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val intent: Intent = Intent(this@MainActivity, AddMemberActivity::class.java)
+                val currentMemberUri: Uri = ContentUris.withAppendedId(MemberEntry.CONTENT_URI, id)
+                intent.setData(currentMemberUri)
+                startActivity(intent)
+            }
+        })
+
+
+        supportLoaderManager.initLoader(MEMBER_LOADER, null, this)
+
     }
 
-    override fun onStart() {
-        super.onStart()
-        displayData()
-    }
-
-    private fun displayData() {
+    override fun onCreateLoader(
+        id: Int,
+        args: Bundle?
+    ): Loader<Cursor?> {
         val projection = arrayOf(
             MemberEntry.COLUMN_ID,
             MemberEntry.COLUMN_FIRST_NAME,
             MemberEntry.COLUMN_LAST_NAME,
-            MemberEntry.COLUMN_GENDER,
             MemberEntry.COLUMN_GROUP
         )
 
-        val cursor = contentResolver.query(MemberEntry.CONTENT_URI, projection, null, null, null)
-            ?: return
+        val cursorLoader: CursorLoader =
+            CursorLoader(this, MemberEntry.CONTENT_URI, projection, null, null, null)
 
-        val memberCursorAdapter = MemberCursorAdapter(this, cursor, false)
-        dataListView.adapter = memberCursorAdapter
+        return cursorLoader
+    }
 
+    override fun onLoadFinished(
+        loader: Loader<Cursor?>,
+        data: Cursor?
+    ) {
+        memberCursorAdapter.swapCursor(data)
+    }
+
+    override fun onLoaderReset(loader: Loader<Cursor?>) {
+        memberCursorAdapter.swapCursor(null)
     }
 
 }

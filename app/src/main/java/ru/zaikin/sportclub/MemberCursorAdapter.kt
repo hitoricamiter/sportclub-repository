@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.cursoradapter.widget.CursorAdapter
 import ru.zaikin.sportclub.data.SportclubContract
 
-class MemberCursorAdapter(context: Context, c: Cursor, autoRequery: Boolean) :
+class MemberCursorAdapter(context: Context, c: Cursor?, autoRequery: Boolean) :
     CursorAdapter(context, c, autoRequery) {
 
 

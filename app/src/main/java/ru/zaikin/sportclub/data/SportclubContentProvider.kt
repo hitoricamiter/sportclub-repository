@@ -62,6 +62,7 @@ class SportclubContentProvider : ContentProvider() {
                     Log.d("insert", "Insert failed: uri=$uri")
                     null
                 } else {
+                    context!!.contentResolver.notifyChange(uri, null)
                     ContentUris.withAppendedId(uri, id)
                 }
             }
@@ -116,6 +117,10 @@ class SportclubContentProvider : ContentProvider() {
         }
 
         cursor.setNotificationUri(context?.contentResolver, uri)
+
+
+        cursor.setNotificationUri(context!!.contentResolver, uri)
+
         return cursor
     }
 
@@ -141,6 +146,7 @@ class SportclubContentProvider : ContentProvider() {
             }
         }
 
+        context!!.contentResolver.notifyChange(uri, null)
         return 0
     }
 
@@ -171,6 +177,8 @@ class SportclubContentProvider : ContentProvider() {
                 )
             }
         }
+
+        context!!.contentResolver.notifyChange(uri, null)
 
         return 0
     }
