@@ -33,6 +33,25 @@ class SportclubContentProvider : ContentProvider() {
     }
 
     override fun insert(uri: Uri, values: ContentValues?): Uri? {
+
+        val firstName: String = values?.getAsString(SportclubContract.MemberEntry.COLUMN_FIRST_NAME)
+            ?: throw java.lang.IllegalArgumentException("Name must be filled")
+
+        val lastName: String = values?.getAsString(SportclubContract.MemberEntry.COLUMN_LAST_NAME)
+            ?: throw java.lang.IllegalArgumentException("Last Name must be filled")
+
+        val gender: Int = values.getAsInteger(SportclubContract.MemberEntry.COLUMN_GENDER)
+
+        if (!(gender == 0 || gender == SportclubContract.MemberEntry.GENDER_UNKNOWN || gender == SportclubContract.MemberEntry.GENDER_MALE || gender ==
+                    SportclubContract.MemberEntry.GENDER_FEMALE)
+        ) {
+            throw java.lang.IllegalArgumentException("You have to input correct gender")
+        }
+
+        val sport: String = values?.getAsString(SportclubContract.MemberEntry.COLUMN_GROUP)
+            ?: throw java.lang.IllegalArgumentException("Group/Sport Name must be filled")
+
+
         val sqldb: SQLiteDatabase = db.writableDatabase
         return when (uriMatcher.match(uri)) {
 
@@ -101,12 +120,58 @@ class SportclubContentProvider : ContentProvider() {
     }
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String?>?): Int {
-        Toast.makeText(context, "Delete not implemented", Toast.LENGTH_SHORT).show()
+
+        val sqldb = db.writableDatabase
+
+        when (uriMatcher.match(uri)) {
+            CODE_MEMBERS -> return sqldb.delete(
+                SportclubContract.MemberEntry.TABLE_NAME,
+                selection,
+                selectionArgs
+            )
+
+            CODE_MEMBER_BY_ID -> {
+                val selection = SportclubContract.MemberEntry.COLUMN_ID + "=?"
+                val selectionArgs = arrayOf(ContentUris.parseId(uri).toString())
+                return sqldb.delete(
+                    SportclubContract.MemberEntry.TABLE_NAME,
+                    selection,
+                    selectionArgs
+                )
+            }
+        }
+
         return 0
     }
 
-    override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<out String?>?): Int {
-        Toast.makeText(context, "Update not implemented", Toast.LENGTH_SHORT).show()
+    override fun update(
+        uri: Uri,
+        values: ContentValues?,
+        selection: String?,
+        selectionArgs: Array<out String?>?
+    ): Int {
+        val sqldb = db.writableDatabase
+
+        when (uriMatcher.match(uri)) {
+            CODE_MEMBERS -> return sqldb.update(
+                SportclubContract.MemberEntry.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs
+            )
+
+            CODE_MEMBER_BY_ID -> {
+                val selection = SportclubContract.MemberEntry.COLUMN_ID + "=?"
+                val selectionArgs = arrayOf(ContentUris.parseId(uri).toString())
+                return sqldb.update(
+                    SportclubContract.MemberEntry.TABLE_NAME,
+                    values,
+                    selection,
+                    selectionArgs
+                )
+            }
+        }
+
         return 0
     }
 

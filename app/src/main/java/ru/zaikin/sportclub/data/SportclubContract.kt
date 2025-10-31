@@ -28,6 +28,7 @@ class SportclubContract {
 
             val CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, "members")
 
+
         }
     }
 }

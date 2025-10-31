@@ -8,15 +8,15 @@
     tools:context=".MainActivity">
 
 
-    <TextView
-        android:id="@+id/dataTextView"
+    <ListView
+        android:id="@+id/dataListView"
         android:layout_marginTop="100dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-    </TextView>
+    </ListView>
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
